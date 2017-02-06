@@ -50,12 +50,44 @@ class VisitBankAndDepositGold(State):
 
 
 class GoHomeAndSleepTillRested(State):
-    pass
+    def enter(self, miner):
+        if miner.location != 'home':
+            print("Miner{}: Going Home to see my lil' lady".format(miner.name))
+            miner.location = 'home'
 
+    def execute(self, miner):
+        miner.fatigue = 0
+        miner.thirst += 1
+        print("Miner {}: Good Mornin'!!".format(miner.name))
+
+        if miner.thirsty():
+            miner.change_state(go_home_and_sleep_till_rested)
+        else:
+            miner.change_state(enter_mine_and_dig_for_nugget)
+
+    def exit(self, miner):
+        print("Miner {}: Another day, another nugget!".format(miner.name))
+        
 
 class QuenchThirst(State):
-    pass
+    def enter(self, miner):
+        if miner.location != 'saloon':
+            print("Miner {}: So thirsty! Ima go get me cold one".format(miner.name))
+            miner.location = 'saloon'
 
+    def execute(self, miner):
+        miner.fatigue += 1
+        miner.thirst = 0
+        print("Miner {}: Whew! That really wet my wistle".format(miner.name))
+
+        if miner.is_tired():
+            miner.change_state(go_home_and_sleep_till_rested)
+        else:
+            miner.change_state(visit_bank_and_deposit_gold)
+
+    def exit(self, miner):
+        print("Miner {}: Gotta Get back to it!".format(miner.name))
+        
 
 enter_mine_and_dig_for_nugget = EnterMineAndDigForNugget()
 visit_bank_and_deposit_gold = VisitBankAndDepositGold()
